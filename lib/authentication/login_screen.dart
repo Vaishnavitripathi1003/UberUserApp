@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:users_app/authentication/signup_screen.dart';
@@ -65,10 +66,24 @@ class _LoginScreenState extends State<LoginScreen> {
      ).user;
 
      if(firebaseuser!=null)
-     {currentFirebaseuser=firebaseuser;
-       Fluttertoast.showToast(msg: "Login Success ");
-       Navigator.push(context, MaterialPageRoute(builder: (c)=> MySplashScreen()));
-
+     {
+       DatabaseReference driverref = FirebaseDatabase.instance.ref().child("users");
+     driverref.child(firebaseuser.uid).once().then((driverkey) {
+       final snap = driverkey.snapshot;
+       if (snap.value != null) {
+         currentFirebaseuser = firebaseuser;
+         Fluttertoast.showToast(msg: "Login Success ");
+         Navigator.push(
+             context, MaterialPageRoute(builder: (c) => MainScreen()));
+       }
+       else
+       {
+         Fluttertoast.showToast(msg: "No Record Exist with this user name ");
+         fAuth.signOut();
+         Navigator.push(
+             context, MaterialPageRoute(builder: (c) => MySplashScreen()));
+       }
+     });
      }
      else
      {
@@ -79,6 +94,11 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title:const Text("Login Screen"),
+        backgroundColor: Colors.grey,
+
+      ),
       backgroundColor: Colors.black,
       body: SingleChildScrollView(
         child: Column(
