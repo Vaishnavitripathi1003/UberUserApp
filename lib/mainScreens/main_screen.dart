@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:users_app/assistants/assistant_methods.dart';
 import 'package:users_app/global/global.dart';
@@ -25,7 +26,8 @@ class _MainScreenState extends State<MainScreen> {
   );
   double searchLocationContainerHeight = 220;
 
-//hello
+  late Position usercurrentPosition;
+  var geolocator=Geolocator();
   blackThemeGoogleMap() {
     newGoogleMapController!.setMapStyle('''
                     [
@@ -190,6 +192,15 @@ class _MainScreenState extends State<MainScreen> {
                       }
                     ]
                 ''');
+  }
+
+  locateUserPosition() async
+  {
+
+    Position currentPosition= await Geolocator.getCurrentPosition(
+  desiredAccuracy: LocationAccuracy.high
+);
+
   }
 
   void initState() {
